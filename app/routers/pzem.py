@@ -28,6 +28,8 @@ class PzemRequest(BaseModel):
     frequency: float = Field(description="Frequency", ge=0.0)
     power_factor: float = Field(description="Power Factor", ge=0.0)
 
+### Pages ###
+
 ### Endpoints ###
 @router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_pzem(pzem_request: PzemRequest, db: Session = Depends(get_db)):
