@@ -1,0 +1,83 @@
+{% include 'layout.html' %}
+
+<div class="flex-row m-4">
+    <h1 class="text-3xl font-bold underline mb-4 text-center">AHT10 Data</h1>
+    <table class="table-auto w-full">
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Timestamp</th>
+                <th class="px-4 py-2">Temperature</th>
+                <th class="px-4 py-2">Humidity</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body">
+            {% for data in aht10 %}
+            <tr>
+                <td class="border px-4 py-2">{{ data.timestamp }}</td>
+                <td class="border px-4 py-2">{{ data.temperature }}</td>
+                <td class="border px-4 py-2">{{ data.humidity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="flex-row m-4">
+    <h2 class="text-2xl font-bold mt-4 text-center">Temperature Chart</h2>
+    <canvas id="temperatureChart" width="400" height="200"></canvas>
+</div>
+
+<div class="flex-row m-4">
+    <h2 class="text-2xl font-bold mt-4 text-center">Humidity Chart</h2>
+    <canvas id="humidityChart" width="400" height="200"></canvas>
+</div>
+
+<script>
+    var temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
+    var temperatureChart = new Chart(temperatureCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for data in aht10 %}'{{ data.timestamp }}',{% endfor %}],
+            datasets: [{
+                label: 'Temperature',
+                data: [{% for data in aht10 %}{{ data.temperature }},{% endfor %}],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    type: 'linear',
+                    display: true,
+                    position: 'left'
+                }]
+            }
+        }
+    });
+
+    var humidityCtx = document.getElementById('humidityChart').getContext('2d');
+    var humidityChart = new Chart(humidityCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for data in aht10 %}'{{ data.timestamp }}',{% endfor %}],
+            datasets: [{
+                label: 'Humidity',
+                data: [{% for data in aht10 %}{{ data.humidity }},{% endfor %}],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    type: 'linear',
+                    display: true,
+                    position: 'left'
+                }]
+            }
+        }
+    });
+</script>

@@ -1,9 +1,10 @@
 import subprocess
+from tempfile import template
 import uvicorn
 
 from fastapi import FastAPI, status, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from fastapi_tailwind import tailwind
 
@@ -38,11 +39,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+templates = Jinja2Templates(directory="app/templates")
+
 app.mount("/static", static_files, name="static")
 
 @app.get("/")
 async def read_root(request: Request):
-    return RedirectResponse(url="/static/index.html", status_code=status.HTTP_302_FOUND)
+    return templates.TemplateResponse("home.html", {"request": request})
 
 app.include_router(pzem.router)
 app.include_router(aht10.router)

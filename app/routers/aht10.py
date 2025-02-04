@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from ..database import Sessionlocal
 from ..models import AHT10
+from datetime import datetime
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -26,6 +27,12 @@ class AHT10Request(BaseModel):
     humidity: float = Field(description="Humidity", ge=0.0, le=100.0)
 
 ### Pages ###
+@router.get("/")
+async def aht10(request: Request, db: Session = Depends(get_db)):
+    aht10_records = db.query(AHT10).all()
+    for record in aht10_records:
+        record.timestamp = datetime.strftime(record.timestamp, "%Y-%m-%d %H:%M")
+    return templates.TemplateResponse("aht10.html", {"request": request, "aht10": aht10_records})
 
 ### Endpoints ###
 @router.post("/create", status_code=status.HTTP_201_CREATED)
@@ -37,11 +44,3 @@ async def create_aht10(aht10_request: AHT10Request, db: Session = Depends(get_db
     db.add(aht10)
     db.commit()
     return aht10
-
-@router.get("/read_10", status_code=status.HTTP_200_OK)
-async def read_aht10_10(db: Session = Depends(get_db)):
-    try:
-        aht10 = db.query(AHT10).order_by(AHT10.timestamp.desc()).limit(10).all()
-        return aht10
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
