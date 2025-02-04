@@ -1,8 +1,7 @@
 import subprocess
-from tempfile import template
 import uvicorn
 
-from fastapi import FastAPI, status, Request
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
@@ -10,7 +9,7 @@ from fastapi_tailwind import tailwind
 
 from app.models import Base
 from app.database import engine
-from app.routers import pzem, aht10
+from app.routers import pzem, aht10, camera, openweather
 
 # Run Alembic migrations before starting the server
 def run_migrations():
@@ -49,6 +48,8 @@ async def read_root(request: Request):
 
 app.include_router(pzem.router)
 app.include_router(aht10.router)
+app.include_router(camera.router)
+app.include_router(openweather.router)
 
 def main():
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -40,3 +40,38 @@ async def create_pzem(pzem_request: PzemRequest, db: Session = Depends(get_db)):
     db.add(pzem)
     db.commit()
     return pzem
+
+@router.get("/read_10", status_code=status.HTTP_200_OK)
+async def read_pzem_10(db: Session = Depends(get_db)):
+    try:
+        pzem = db.query(Pzem).order_by(Pzem.timestamp.desc()).limit(10).all()
+        return pzem
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@router.put("/update/{pzem_id}", status_code=status.HTTP_200_OK)
+async def update_pzem(pzem_id: int, pzem_request: PzemRequest, db: Session = Depends(get_db)):
+    try:
+        pzem = db.query(Pzem).filter(Pzem.id == pzem_id).first()
+        if not pzem:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pzem not found")
+        
+        pzem.temperature = pzem_request.temperature
+        pzem.humidity = pzem_request.humidity
+        db.commit()
+        return pzem
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    
+@router.delete("/delete/{pzem_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_pzem(pzem_id: int, db: Session = Depends(get_db)):
+    try:
+        pzem = db.query(Pzem).filter(Pzem.id == pzem_id).first()
+        if not pzem:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pzem not found")
+        
+        db.delete(pzem)
+        db.commit()
+        return {"message": "Pzem data deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

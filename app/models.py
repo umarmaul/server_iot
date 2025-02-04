@@ -19,3 +19,16 @@ class AHT10(Base):
     timestamp = Column(DateTime, index=True, default=datetime.datetime.now)
     temperature = Column(Float)
     humidity = Column(Float)
+
+class Camera(Base):
+    __tablename__ = "camera"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    timestamp = Column(DateTime, index=True, default=datetime.datetime.now)
+    occupant = Column(Integer)
+    
+class OpenWeather(Base):
+    __tablename__ = "open_weather"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    timestamp = Column(DateTime, index=True, default=datetime.datetime.now)
+    temperature = Column(Float)
+    humidity = Column(Float)
